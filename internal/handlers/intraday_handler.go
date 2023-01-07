@@ -13,6 +13,8 @@ import (
 )
 
 type IntraDayInterface interface {
+	GetIntraDay(ctx context.Context, symbol string) (*IntraDay, error)
+	LatestIntraDay(ctx context.Context, symbol string) (*IntraDay, error)
 }
 
 var _ IntraDayInterface = &IntraDay{}
