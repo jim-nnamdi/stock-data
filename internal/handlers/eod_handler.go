@@ -56,7 +56,7 @@ func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error)
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, os.Getenv("STOCK_BASE")+"/eod?access_key="+os.Getenv("ACCESS_KEY")+"&symbols="+symbol, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, os.Getenv("STOCK_BASE_EOD")+"&symbols="+symbol, nil)
 	if err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
@@ -85,7 +85,7 @@ func (ed *EOD) LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, err
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, os.Getenv("STOCK_BASE")+"/eod/latest?access_key="+os.Getenv("ACCESS_KEY")+"&symbols="+symbol, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, os.Getenv("STOCK_BASE_EOD_LATEST")+"&symbols="+symbol, nil)
 	if err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
