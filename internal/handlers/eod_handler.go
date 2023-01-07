@@ -20,8 +20,8 @@ type EndOfDay interface {
 var _ EndOfDay = &EOD{}
 
 var (
-	client          = &http.Client{}
-	ErrOutputStream = "cannot feed stock data into output stream"
+	client             = &http.Client{}
+	ErrEODOutputStream = "cannot feed stock data into output stream"
 )
 
 type EOD struct {
@@ -75,7 +75,7 @@ func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error)
 	var val EOD
 	if err := json.Unmarshal(dataBytes, &val); err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
-		return nil, errors.New(ErrOutputStream)
+		return nil, errors.New(ErrEODOutputStream)
 	}
 	return &val, nil
 }
@@ -104,7 +104,7 @@ func (ed *EOD) LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, err
 	var val EOD
 	if err := json.Unmarshal(dataBytes, &val); err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
-		return nil, errors.New(ErrOutputStream)
+		return nil, errors.New(ErrEODOutputStream)
 	}
 	return &val, nil
 }
