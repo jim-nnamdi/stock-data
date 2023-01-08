@@ -48,14 +48,10 @@ type EODData struct {
 	Date        string  `json:"date"`
 }
 
-func NewEOD(logger *zap.Logger, pagination Pagination, data []EODData) chan *EOD {
-	out := make(chan *EOD)
-	out <- &EOD{
-		logger:     logger,
-		Pagination: pagination,
-		Data:       data,
+func NewEOD(logger *zap.Logger) *EOD {
+	return &EOD{
+		logger: logger,
 	}
-	return out
 }
 
 func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {
