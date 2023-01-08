@@ -16,11 +16,14 @@ type DividendInterface interface {
 	GetDividends(ctx context.Context, symbol string) (*Dividend, error)
 }
 
-var _ DividendInterface = &Dividend{}
+var _ DividendInterface = &NewDividend{}
 var ErrDividendError = "Error fetching dividend data"
 
+type NewDividend struct {
+	logger *zap.Logger
+}
+
 type Dividend struct {
-	logger     *zap.Logger
 	Pagination Pagination     `json:"pagination"`
 	Data       []DividendData `json:"data"`
 }
@@ -31,17 +34,13 @@ type DividendData struct {
 	Symbol   string  `json:"symbol"`
 }
 
-func NewDividend(logger *zap.Logger, pagination Pagination, data []DividendData) chan *Dividend {
-	out := make(chan *Dividend)
-	out <- &Dividend{
-		logger:     logger,
-		Pagination: pagination,
-		Data:       data,
+func NewDividendData(logger *zap.Logger) *NewDividend {
+	return &NewDividend{
+		logger: logger,
 	}
-	return out
 }
 
-func (dividend *Dividend) GetDividends(ctx context.Context, symbol string) (*Dividend, error) {
+func (dividend *NewDividend) GetDividends(ctx context.Context, symbol string) (*Dividend, error) {
 	if err := godotenv.Load(); err != nil {
 		dividend.logger.Error(err.Error(), zap.Error(err))
 		return nil, errors.New("unable to fetch env variables")

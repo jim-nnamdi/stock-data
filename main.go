@@ -1,32 +1,29 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/jim-nnamdi/stock-data/internal/handlers"
-	"go.uber.org/zap"
+	"github.com/gorilla/mux"
+	"github.com/jim-nnamdi/stock-data/internal/entrypoint"
 )
 
-var (
-	logger      = zap.NewNop()
-	endofday    = handlers.NewEOD(logger)
-	ErrEndOfDay = "cannot fetch end of day from client"
-)
-
-func EODentry(w http.ResponseWriter, r *http.Request) {
-	symbol := r.FormValue("symbol")
-	eodresult, err := endofday.GetEndOfDayData(r.Context(), symbol)
-	if err != nil {
-		logger.Debug(ErrEndOfDay, zap.Any(ErrEndOfDay, err))
-		return
-	}
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(eodresult)
+func EndOfDayInfo(w http.ResponseWriter, r *http.Request) {
+	entrypoint.EndOfDayInfo(w, r)
+}
+func LatestEndOfDayInfo(w http.ResponseWriter, r *http.Request) {
+	entrypoint.EndOfDayInfo(w, r)
+}
+func Dividends(w http.ResponseWriter, r *http.Request) {
+	entrypoint.Dividends(w, r)
 }
 
 func main() {
+	route := mux.NewRouter()
+	route.HandleFunc("/eod", EndOfDayInfo)
+	route.HandleFunc("/eod/latest", LatestEndOfDayInfo)
+	route.HandleFunc("/dividends", Dividends)
+
 	msg := make(chan string)
 	go func() {
 		msg <- "Hello nyse & nasdaq"

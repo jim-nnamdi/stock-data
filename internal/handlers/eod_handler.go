@@ -17,15 +17,18 @@ type EndOfDay interface {
 	LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, error)
 }
 
-var _ EndOfDay = &EOD{}
+var _ EndOfDay = &NewEOD{}
 
 var (
 	client             = &http.Client{}
 	ErrEODOutputStream = "cannot feed stock data into output stream"
 )
 
+type NewEOD struct {
+	logger *zap.Logger
+}
+
 type EOD struct {
-	logger     *zap.Logger
 	Pagination Pagination `json:"pagination"`
 	Data       []EODData  `json:"data"`
 }
@@ -48,13 +51,13 @@ type EODData struct {
 	Date        string  `json:"date"`
 }
 
-func NewEOD(logger *zap.Logger) *EOD {
-	return &EOD{
+func NewEODData(logger *zap.Logger) *NewEOD {
+	return &NewEOD{
 		logger: logger,
 	}
 }
 
-func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {
+func (ed *NewEOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {
 	if err := godotenv.Load(); err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
@@ -84,7 +87,7 @@ func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error)
 	return &val, nil
 }
 
-func (ed *EOD) LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {
+func (ed *NewEOD) LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {
 	if err := godotenv.Load(); err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
