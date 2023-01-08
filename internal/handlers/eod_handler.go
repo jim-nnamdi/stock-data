@@ -26,29 +26,36 @@ var (
 
 type EOD struct {
 	logger     *zap.Logger
-	Pagination struct {
-		Limit  int `json:"limit"`
-		Offset int `json:"offset"`
-		Count  int `json:"count"`
-		Total  int `json:"total"`
-	} `json:"pagination"`
-	Data []struct {
-		Open        float64 `json:"open"`
-		High        float64 `json:"high"`
-		Low         float64 `json:"low"`
-		Close       float64 `json:"close"`
-		Volume      float64 `json:"volume"`
-		AdjHigh     float64 `json:"adj_high"`
-		AdjLow      float64 `json:"adj_low"`
-		AdjClose    float64 `json:"adj_close"`
-		AdjOpen     float64 `json:"adj_open"`
-		AdjVolume   float64 `json:"adj_volume"`
-		Splitfactor float64 `json:"splitfactor"`
-		Dividend    float64 `json:"dividend"`
-		Symbol      string  `json:"symbol"`
-		Exchange    string  `json:"exchange"`
-		Date        string  `json:"date"`
-	} `json:"data"`
+	Pagination Pagination `json:"pagination"`
+	Data       []EODData  `json:"data"`
+}
+
+type EODData struct {
+	Open        float64 `json:"open"`
+	High        float64 `json:"high"`
+	Low         float64 `json:"low"`
+	Close       float64 `json:"close"`
+	Volume      float64 `json:"volume"`
+	AdjHigh     float64 `json:"adj_high"`
+	AdjLow      float64 `json:"adj_low"`
+	AdjClose    float64 `json:"adj_close"`
+	AdjOpen     float64 `json:"adj_open"`
+	AdjVolume   float64 `json:"adj_volume"`
+	Splitfactor float64 `json:"splitfactor"`
+	Dividend    float64 `json:"dividend"`
+	Symbol      string  `json:"symbol"`
+	Exchange    string  `json:"exchange"`
+	Date        string  `json:"date"`
+}
+
+func NewEOD(logger *zap.Logger, pagination Pagination, data []EODData) chan *EOD {
+	out := make(chan *EOD)
+	out <- &EOD{
+		logger:     logger,
+		Pagination: pagination,
+		Data:       data,
+	}
+	return out
 }
 
 func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error) {

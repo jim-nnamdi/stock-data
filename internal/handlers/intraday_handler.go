@@ -26,23 +26,30 @@ var (
 
 type IntraDay struct {
 	logger     *zap.Logger
-	Pagination struct {
-		Limit  int `json:"limit"`
-		Offset int `json:"offset"`
-		Count  int `json:"count"`
-		Total  int `json:"total"`
-	} `json:"pagination"`
-	Data []struct {
-		Open     float64 `json:"open"`
-		High     float64 `json:"high"`
-		Low      float64 `json:"low"`
-		Last     float64 `json:"last"`
-		Close    float64 `json:"close"`
-		Volume   float64 `json:"volume"`
-		Date     string  `json:"date"`
-		Symbol   string  `json:"symbol"`
-		Exchange string  `json:"exchange"`
-	} `json:"data"`
+	Pagination Pagination     `json:"pagination"`
+	Data       []IntraDayData `json:"data"`
+}
+
+type IntraDayData struct {
+	Open     float64 `json:"open"`
+	High     float64 `json:"high"`
+	Low      float64 `json:"low"`
+	Last     float64 `json:"last"`
+	Close    float64 `json:"close"`
+	Volume   float64 `json:"volume"`
+	Date     string  `json:"date"`
+	Symbol   string  `json:"symbol"`
+	Exchange string  `json:"exchange"`
+}
+
+func NewIntraDayData(logger *zap.Logger, pagination Pagination, data []IntraDayData) chan *IntraDay {
+	out := make(chan *IntraDay)
+	out <- &IntraDay{
+		logger:     logger,
+		Pagination: pagination,
+		Data:       data,
+	}
+	return out
 }
 
 func (intraday *IntraDay) GetIntraDay(ctx context.Context, symbol string) (*IntraDay, error) {

@@ -24,24 +24,34 @@ var (
 
 type Historical struct {
 	logger     *zap.Logger
-	Pagination struct {
-		Limit  int `json:"limit"`
-		Offset int `json:"offset"`
-		Count  int `json:"count"`
-		Total  int `json:"total"`
-	} `json:"pagination"`
-	Data []struct {
-		Open      float64 `json:"open"`
-		High      float64 `json:"high"`
-		Low       float64 `json:"low"`
-		Close     float64 `json:"close"`
-		Volume    float64 `json:"volume"`
-		AdjHigh   float64 `json:"adj_high"`
-		AdjLow    float64 `json:"adj_low"`
-		AdjClose  float64 `json:"adj_close"`
-		AdjOpen   float64 `json:"adj_open"`
-		AdjVolume float64 `json:"adj_volume"`
-	} `json:"data"`
+	Pagination Pagination       `json:"pagination"`
+	Data       []Historicaldata `json:"data"`
+}
+
+type Historicaldata struct {
+	Open      float64 `json:"open"`
+	High      float64 `json:"high"`
+	Low       float64 `json:"low"`
+	Close     float64 `json:"close"`
+	Volume    float64 `json:"volume"`
+	AdjHigh   float64 `json:"adj_high"`
+	AdjLow    float64 `json:"adj_low"`
+	AdjClose  float64 `json:"adj_close"`
+	AdjOpen   float64 `json:"adj_open"`
+	AdjVolume float64 `json:"adj_volume"`
+	Symbol    string  `json:"symbol"`
+	Exchange  string  `json:"exchange"`
+	Date      string  `json:"date"`
+}
+
+func NewHistoricalData(logger *zap.Logger, pagination Pagination, data []Historicaldata) chan *Historical {
+	out := make(chan *Historical)
+	out <- &Historical{
+		logger:     logger,
+		Pagination: pagination,
+		Data:       data,
+	}
+	return out
 }
 
 // Get Historical end of day data for a particular symbol
