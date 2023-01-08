@@ -31,21 +31,16 @@ type Historical struct {
 		Total  int `json:"total"`
 	} `json:"pagination"`
 	Data []struct {
-		Open        float64 `json:"open"`
-		High        float64 `json:"high"`
-		Low         float64 `json:"low"`
-		Close       float64 `json:"close"`
-		Volume      float64 `json:"volume"`
-		AdjHigh     float64 `json:"adj_high"`
-		AdjLow      float64 `json:"adj_low"`
-		AdjClose    float64 `json:"adj_close"`
-		AdjOpen     float64 `json:"adj_open"`
-		AdjVolume   float64 `json:"adj_volume"`
-		Splitfactor float64 `json:"splitfactor"`
-		Dividend    float64 `json:"dividend"`
-		Symbol      string  `json:"symbol"`
-		Exchange    string  `json:"exchange"`
-		Date        string  `json:"date"`
+		Open      float64 `json:"open"`
+		High      float64 `json:"high"`
+		Low       float64 `json:"low"`
+		Close     float64 `json:"close"`
+		Volume    float64 `json:"volume"`
+		AdjHigh   float64 `json:"adj_high"`
+		AdjLow    float64 `json:"adj_low"`
+		AdjClose  float64 `json:"adj_close"`
+		AdjOpen   float64 `json:"adj_open"`
+		AdjVolume float64 `json:"adj_volume"`
 	} `json:"data"`
 }
 
