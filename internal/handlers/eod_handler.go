@@ -61,6 +61,7 @@ func (ed *EOD) GetEndOfDayData(ctx context.Context, symbol string) (*EOD, error)
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
 	}
+	req.Header.Add("Content-Type", "application/json")
 	res, err := client.Do(req)
 	if err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
@@ -90,6 +91,7 @@ func (ed *EOD) LatestEndOfDayData(ctx context.Context, symbol string) (*EOD, err
 		ed.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
 	}
+	req.Header.Add("Content-Type", "application/json")
 	res, err := client.Do(req)
 	if err != nil {
 		ed.logger.Error(err.Error(), zap.Error(err))
