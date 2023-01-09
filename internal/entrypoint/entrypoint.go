@@ -15,6 +15,12 @@ var (
 
 	dividend    = handlers.NewDividendData(logger)
 	ErrDividend = "cannot fetch dividends from client"
+
+	historical    = handlers.NewHistoricalData(logger)
+	ErrHistorical = "cannot fetch historical data"
+
+	tickers    = handlers.NewTicker(logger)
+	ErrTickers = "error fetching tickers!"
 )
 
 func EndOfDayInfo(w http.ResponseWriter, r *http.Request) {
@@ -48,4 +54,27 @@ func Dividends(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dividends)
+}
+
+func HistoricalData(w http.ResponseWriter, r *http.Request) {
+	symbol := r.FormValue("symbol")
+	datefrom := r.FormValue("datefrom")
+	dateto := r.FormValue("dateto")
+	historicalData, err := historical.GetHistoricalEndOfDayData(r.Context(), symbol, datefrom, dateto)
+	if err != nil {
+		logger.Debug(err.Error(), zap.Any("error", err))
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(historicalData)
+}
+
+func GetStockTickers(w http.ResponseWriter, r *http.Request) {
+	tickers, err := tickers.GetStockTickers(r.Context())
+	if err != nil {
+		logger.Debug(err.Error(), zap.Any("error", err))
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(tickers)
 }

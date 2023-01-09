@@ -15,8 +15,13 @@ import (
 type TickerInterface interface {
 }
 
+type TickerDatas struct {
+	logger *zap.Logger
+}
+
+var _ TickerInterface = &TickerDatas{}
+
 type Ticker struct {
-	logger     *zap.Logger
 	Pagination Pagination   `json:"pagination"`
 	Ticker     []TickerData `json:"data"`
 }
@@ -40,18 +45,13 @@ type StockExchange struct {
 var _ TickerInterface = &Ticker{}
 var ErrTickerInfo = "Error fetching stock tickers"
 
-func NewTicker(logger *zap.Logger, pagination Pagination, ticker []TickerData) chan *Ticker {
-	out := make(chan *Ticker)
-	out <- &Ticker{
-		logger:     logger,
-		Pagination: pagination,
-		Ticker:     ticker,
+func NewTicker(logger *zap.Logger) *TickerDatas {
+	return &TickerDatas{
+		logger: logger,
 	}
-	defer close(out)
-	return out
 }
 
-func (ticker *Ticker) GetStockTickers(ctx context.Context) (*Ticker, error) {
+func (ticker *TickerDatas) GetStockTickers(ctx context.Context) (*Ticker, error) {
 	if err := godotenv.Load(); err != nil {
 		ticker.logger.Error(err.Error(), zap.Error(err))
 		return nil, errors.New(ErrTickerInfo)

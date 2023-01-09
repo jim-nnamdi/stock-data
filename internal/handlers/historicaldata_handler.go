@@ -16,14 +16,16 @@ type HistoricalData interface {
 	GetHistoricalEndOfDayData(ctx context.Context, symbol string, datefrom string, dateto string) (*Historical, error)
 }
 
-var _ HistoricalData = &Historical{}
+var _ HistoricalData = &HistoricalDataS{}
 
 var (
 	ErrHistoricalOutputStream = "cannot feed historical data into output stream"
 )
 
+type HistoricalDataS struct {
+	logger *zap.Logger
+}
 type Historical struct {
-	logger     *zap.Logger
 	Pagination Pagination       `json:"pagination"`
 	Data       []Historicaldata `json:"data"`
 }
@@ -44,20 +46,16 @@ type Historicaldata struct {
 	Date      string  `json:"date"`
 }
 
-func NewHistoricalData(logger *zap.Logger, pagination Pagination, data []Historicaldata) chan *Historical {
-	out := make(chan *Historical)
-	out <- &Historical{
-		logger:     logger,
-		Pagination: pagination,
-		Data:       data,
+func NewHistoricalData(logger *zap.Logger) *HistoricalDataS {
+	return &HistoricalDataS{
+		logger: logger,
 	}
-	return out
 }
 
 // Get Historical end of day data for a particular symbol
 // the dates are taken in as string as time.duration and
 // parsed as time.Time if used in a database.
-func (historical *Historical) GetHistoricalEndOfDayData(ctx context.Context, symbol string, datefrom string, dateto string) (*Historical, error) {
+func (historical *HistoricalDataS) GetHistoricalEndOfDayData(ctx context.Context, symbol string, datefrom string, dateto string) (*Historical, error) {
 	if err := godotenv.Load(); err != nil {
 		historical.logger.Error(err.Error(), zap.Error(err))
 		return nil, err
